@@ -27,7 +27,10 @@
     "no": "ના",
     "instanceBadge": "ઇન્સ્ટન્સ",
     "otherInstances": "{count, plural, one {અન્ય ઇન્સ્ટન્સમાં # ચેટ} other {અન્ય ઇન્સ્ટન્સમાં # ચેટ}}",
-    "onlyActiveInstance": "ફક્ત સક્રિય ઇન્સ્ટન્સ બતાવો"
+    "onlyActiveInstance": "ફક્ત સક્રિય ઇન્સ્ટન્સ બતાવો",
+    "viewAsClient": "View as client",
+    "backToMyView": "Back to my view",
+    "viewAsClientInfo": "Clients get a roomier layout, and the agent says “client” instead of “res.partner”."
   },
   "UserMenu": {
     "guest": "મહેમાન",
@@ -96,7 +99,10 @@
     "micPaused": "રેકોર્ડિંગ થોભેલું છે",
     "micDenied": "માઇક્રોફોનની પરવાનગી નકારાઈ",
     "transcribing": "ટ્રાન્સક્રાઇબ થઈ રહ્યું છે...",
-    "transcribeError": "ઓડિયો ટ્રાન્સક્રાઇબ કરી શકાયો નહીં"
+    "transcribeError": "ઓડિયો ટ્રાન્સક્રાઇબ કરી શકાયો નહીં",
+    "selectConfig": "Choose an instance",
+    "ownGroup": "Your instances",
+    "demoGroup": "Sample companies"
   },
   "ChatMessages": {
     "typingIndicator": "Odoo ક્વેરી કરી રહ્યા છીએ",
@@ -160,7 +166,8 @@
       "title": "ઓળખપત્ર ગોઠવ્યા નથી",
       "desc": "આ Odoo કનેક્શન માટે ઓળખપત્ર ગોઠવ્યા નથી. ક્વેરી ચલાવવા સેટિંગ્સ માં ગોઠવો.",
       "cta": "સેટિંગ્સ પર જાઓ"
-    }
+    },
+    "connectionError": "અમે વિનંતી પૂરી કરી શક્યા નહીં. કનેક્શન તપાસો અને ફરી પ્રયાસ કરો."
   },
   "ChatHistory": {
     "loading": "વાર્તાલાપ લોડ થઈ રહી છે..."
@@ -597,7 +604,10 @@
     "accessCodePlaceholder": "Your invitation code",
     "accessCodeError": "Registration is for Founding Partners only. To request access, reach out at <mail>martin@theodooagent.com</mail>",
     "requestAccess": "No code yet? <mail>Request access</mail>",
-    "requestAccessEmail": "martin@theodooagent.com"
+    "requestAccessEmail": "martin@theodooagent.com",
+    "demoBannerNamed": "Demo mode — you're looking at {instance}, a sample company.",
+    "previewAsClientBanner": "You're seeing {instance} as your end client would: trimmed menu, roomier layout, and the agent speaking without technical jargon.",
+    "previewAsClientHint": "Try seeing it as your client does, from the left-hand menu."
   },
   "Onboarding": {
     "step1Label": "Odoo Connection",
@@ -1840,6 +1850,8 @@
       "accountMove": "ઇન્વોઇસ",
       "crmLead": "તકો",
       "purchaseOrder": "ખરીદી"
-    }
+    },
+    "titleDemo": "What I already know about {instance}",
+    "hintDemo": "This is a sample company. Ask me about any of these numbers."
   }
 }

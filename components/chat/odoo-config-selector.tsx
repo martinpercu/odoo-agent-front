@@ -10,17 +10,21 @@ import {
   Loader2,
   Database,
 } from "lucide-react";
+import { instanceLabel } from "@/lib/instance-label";
 import { useOdooConfig } from "@/hooks/use-odoo-config";
 import { fetchMyCredential } from "@/lib/api";
 
 /** Cache credential status per config_id to avoid re-fetching on each render */
 const credentialStatusCache = new Map<string, "configured" | "missing">();
 
-function useCredentialStatus(configId: string | null) {
+function useCredentialStatus(configId: string | null, isDemo = false) {
   const [status, setStatus] = useState<"loading" | "configured" | "missing">("loading");
 
   useEffect(() => {
-    if (!configId || configId === "demo") {
+    // ⚠️ Una instancia del parque no tiene Connection por usuario: su credencial vive
+    // en la FILA, del lado del backend. Preguntar por ella devolvería "missing" y
+    // pintaría un triángulo de advertencia sobre una instancia que anda perfecto.
+    if (!configId || configId === "demo" || isDemo) {
       setStatus("configured");
       return;
     }
@@ -35,7 +39,7 @@ function useCredentialStatus(configId: string | null) {
       credentialStatusCache.set(configId, resolved);
       setStatus(resolved);
     });
-  }, [configId]);
+  }, [configId, isDemo]);
 
   return status;
 }
@@ -46,8 +50,12 @@ export function OdooConfigSelector() {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  const credStatus = useCredentialStatus(activeConfigId);
   const activeConfig = configs.find((c) => c.id === activeConfigId) ?? null;
+  const credStatus = useCredentialStatus(activeConfigId, activeConfig?.is_demo === true);
+  // Las del parque van agrupadas aparte: "Kestrel Sales Group" y la instancia de un
+  // cliente real no son la misma clase de cosa, y en una lista plana se ven igual.
+  const demoOptions = configs.filter((c) => c.is_demo);
+  const ownOptions = configs.filter((c) => !c.is_demo);
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -64,7 +72,7 @@ export function OdooConfigSelector() {
   if (configs.length === 0 && !isDemoMode) return null;
   if (configs.length <= 1 && !isDemoMode) {
     // Single config — just show status badge, no dropdown
-    const label = activeConfig?.label || activeConfig?.url || "Odoo";
+    const label = instanceLabel(activeConfig) || activeConfig?.url || "Odoo";
     return (
       <div className="flex items-center gap-1.5 rounded-md px-2 py-1 text-micro text-text-muted">
         {credStatus === "loading" ? (
@@ -98,7 +106,10 @@ export function OdooConfigSelector() {
         )}
         <Database size={12} strokeWidth={1.5} className="shrink-0" />
         <span className="font-technical truncate max-w-[100px]">
-          {isDemoMode ? "Demo" : (activeConfig?.label || activeConfig?.url || t("selectConfig"))}
+          {/* ⚠️ Ya no dice "Demo": con cuatro instancias de demo ese rótulo las
+              llamaba a todas igual. `instanceLabel` es la precedencia compartida
+              con el backend (display_name → company_name → label). */}
+          {instanceLabel(activeConfig) || activeConfig?.url || t("selectConfig")}
         </span>
         <ChevronDown
           size={11}
@@ -121,20 +132,37 @@ export function OdooConfigSelector() {
               <p className="text-micro uppercase tracking-wide text-text-muted">{t("selectConfig")}</p>
             </div>
             <div className="py-1 max-h-48 overflow-y-auto">
-              {configs.map((cfg) => (
-                <ConfigOption
-                  key={cfg.id}
-                  configId={cfg.id}
-                  label={cfg.label || cfg.url}
-                  url={cfg.url}
-                  dbName={cfg.db_name}
-                  isActive={cfg.id === activeConfigId}
-                  onSelect={() => {
-                    setActiveConfigId(cfg.id);
-                    setOpen(false);
-                  }}
-                />
-              ))}
+              {[
+                { key: "own", heading: t("ownGroup"), items: ownOptions },
+                { key: "demo", heading: t("demoGroup"), items: demoOptions },
+              ].map(({ key, heading, items }) =>
+                items.length === 0 ? null : (
+                  <div key={key}>
+                    {/* El encabezado sólo aparece cuando hay las DOS clases: con una
+                        sola, rotular es ruido. */}
+                    {ownOptions.length > 0 && demoOptions.length > 0 && (
+                      <p className="px-3 pt-2 pb-1 text-micro uppercase tracking-wide text-text-muted">
+                        {heading}
+                      </p>
+                    )}
+                    {items.map((cfg) => (
+                      <ConfigOption
+                        key={cfg.id}
+                        configId={cfg.id}
+                        isDemo={cfg.is_demo === true}
+                        label={instanceLabel(cfg) || cfg.url}
+                        url={cfg.url}
+                        dbName={cfg.db_name}
+                        isActive={cfg.id === activeConfigId}
+                        onSelect={() => {
+                          setActiveConfigId(cfg.id);
+                          setOpen(false);
+                        }}
+                      />
+                    ))}
+                  </div>
+                )
+              )}
             </div>
           </motion.div>
         )}
@@ -145,6 +173,7 @@ export function OdooConfigSelector() {
 
 interface ConfigOptionProps {
   configId: string;
+  isDemo?: boolean;
   label: string;
   url: string;
   dbName: string;
@@ -152,8 +181,8 @@ interface ConfigOptionProps {
   onSelect: () => void;
 }
 
-function ConfigOption({ configId, label, url, dbName, isActive, onSelect }: ConfigOptionProps) {
-  const credStatus = useCredentialStatus(configId);
+function ConfigOption({ configId, isDemo, label, url, dbName, isActive, onSelect }: ConfigOptionProps) {
+  const credStatus = useCredentialStatus(configId, isDemo);
 
   return (
     <button

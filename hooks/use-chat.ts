@@ -18,6 +18,7 @@ import type { TraceEntry } from "@/components/chat/langgraph-trace-panel";
 import { API_BASE, executeAction as executeActionAPI, uploadImage as uploadImageAPI, fetchChatHistory, fetchMyConversations, deleteChat as deleteChatAPI } from "@/lib/api";
 import { getAccessToken } from "@/lib/supabase";
 import { useOdooConfig } from "@/hooks/use-odoo-config";
+import { useAudience } from "@/hooks/use-audience";
 import { useLocale, useTranslations } from "next-intl";
 import { IS_AUTH_ENABLED } from "@/lib/supabase";
 import { useSession } from "@/hooks/use-session";
@@ -87,6 +88,7 @@ export function useChat(chatId?: string, userId?: string) {
   const abortControllerRef = useRef<AbortController | null>(null);
   const loadedChatIdsRef = useRef<Set<string>>(new Set());
   const { activeConfigId, isConfigured } = useOdooConfig();
+  const { isPreviewingAsClient } = useAudience();
   const locale = useLocale();
   const t = useTranslations("ChatMessages");
   const { meData } = useSession();
@@ -359,6 +361,12 @@ export function useChat(chatId?: string, userId?: string) {
             message: content,
             config_id: activeConfigId,
             language: locale,
+            // Vista previa "como lo ve tu cliente" (PLAN_INSTANCIAS/07 Idea 3). Sólo
+            // se manda cuando está encendida, y sólo puede pedir ver MENOS: el back
+            // ignora un pedido de subir de audiencia (`_audience_for_request`), así
+            // que esto no es la defensa sino la comodidad. Con esto la respuesta llega
+            // con voz de concierge y sanitizada, no sólo con la cáscara achicada.
+            ...(isPreviewingAsClient ? { audience: "client" } : {}),
             ...ttsBody,
           }),
           signal: controller.signal,
@@ -629,6 +637,9 @@ export function useChat(chatId?: string, userId?: string) {
       createChat,
       updateChat,
       activeConfigId,
+      // Sin esto el callback captura el valor VIEJO: se cambia a vista cliente y el
+      // primer mensaje siguiente todavía sale con audiencia de implementador.
+      isPreviewingAsClient,
       isConfigured,
       locale,
       t,
@@ -648,7 +659,10 @@ export function useChat(chatId?: string, userId?: string) {
     async (actionContext: ActionContext) => {
       if (!currentChatId || !activeConfigId) return;
 
-      const result = await executeActionAPI(currentChatId, actionContext, activeConfigId, locale);
+      const result = await executeActionAPI(
+        currentChatId, actionContext, activeConfigId, locale,
+        isPreviewingAsClient ? "client" : undefined
+      );
 
       if (!result.success) {
         // If we have per-field validation errors (422), throw them back to the
@@ -720,7 +734,7 @@ export function useChat(chatId?: string, userId?: string) {
         sendMessage(result.queue_next.text, currentChatId);
       }
     },
-    [currentChatId, activeConfigId, locale, sendMessage, updateChat]
+    [currentChatId, activeConfigId, locale, sendMessage, updateChat, isPreviewingAsClient]
   );
 
   const loadChatHistory = useCallback(

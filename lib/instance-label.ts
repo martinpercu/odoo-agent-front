@@ -43,6 +43,19 @@ export function instanceLabelById(
   configId: string | null | undefined
 ): string | null {
   if (!configId) return null;
+  const found = instanceLabel(configs?.find((c) => c.id === configId));
+  if (found) return found;
+  /**
+   * ⚠️ El caso especial de demo **se invirtió** con el parque de instancias
+   * (PLAN_INSTANCIAS/05). Antes esto devolvía `"Demo"` ANTES de buscar, y con cuatro
+   * instancias de demo eso llamaba igual a Kestrel Sales Group, Ladera Consultores,
+   * Casa Mendieta y Distribuidora 21 — o sea, tapaba justo el dato que el cartel
+   * existe para dar. Ahora la fila manda: una instancia del parque tiene
+   * `display_name` de verdad y la precedencia normal alcanza.
+   *
+   * Queda sólo para el literal `"demo"`, que es el alias de compatibilidad y no
+   * tiene fila: chats viejos, links compartidos, y el arranque sin catálogo cargado.
+   */
   if (configId === "demo") return "Demo";
-  return instanceLabel(configs?.find((c) => c.id === configId));
+  return null;
 }

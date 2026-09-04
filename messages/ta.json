@@ -27,7 +27,10 @@
     "no": "இல்லை",
     "instanceBadge": "நிகழ்வு",
     "otherInstances": "{count, plural, one {மற்ற நிகழ்வுகளில் # உரையாடல்} other {மற்ற நிகழ்வுகளில் # உரையாடல்கள்}}",
-    "onlyActiveInstance": "செயலில் உள்ள நிகழ்வை மட்டும் காட்டு"
+    "onlyActiveInstance": "செயலில் உள்ள நிகழ்வை மட்டும் காட்டு",
+    "viewAsClient": "View as client",
+    "backToMyView": "Back to my view",
+    "viewAsClientInfo": "Clients get a roomier layout, and the agent says “client” instead of “res.partner”."
   },
   "UserMenu": {
     "guest": "விருந்தினர்",
@@ -96,7 +99,10 @@
     "micPaused": "பதிவு இடைநிறுத்தப்பட்டது",
     "micDenied": "மைக்ரோஃபோன் அனுமதி மறுக்கப்பட்டது",
     "transcribing": "படியெடுக்கப்படுகிறது...",
-    "transcribeError": "ஆடியோவை படியெடுக்க முடியவில்லை"
+    "transcribeError": "ஆடியோவை படியெடுக்க முடியவில்லை",
+    "selectConfig": "Choose an instance",
+    "ownGroup": "Your instances",
+    "demoGroup": "Sample companies"
   },
   "ChatMessages": {
     "typingIndicator": "Odoo-ஐ வினவுகிறோம்",
@@ -160,7 +166,8 @@
       "title": "சான்றுகள் உள்ளமைக்கப்படவில்லை",
       "desc": "இந்த Odoo இணைப்புக்கான சான்றுகள் உள்ளமைக்கப்படவில்லை. வினவல்களை இயக்க அமைப்புகளில் உள்ளமைக்கவும்.",
       "cta": "அமைப்புகளுக்கு செல்லவும்"
-    }
+    },
+    "connectionError": "கோரிக்கையை முடிக்க முடியவில்லை. இணைப்பைச் சரிபார்த்து மீண்டும் முயற்சிக்கவும்."
   },
   "ChatHistory": {
     "loading": "உரையாடல் ஏற்றப்படுகிறது..."
@@ -597,7 +604,10 @@
     "accessCodePlaceholder": "Your invitation code",
     "accessCodeError": "Registration is for Founding Partners only. To request access, reach out at <mail>martin@theodooagent.com</mail>",
     "requestAccess": "No code yet? <mail>Request access</mail>",
-    "requestAccessEmail": "martin@theodooagent.com"
+    "requestAccessEmail": "martin@theodooagent.com",
+    "demoBannerNamed": "Demo mode — you're looking at {instance}, a sample company.",
+    "previewAsClientBanner": "You're seeing {instance} as your end client would: trimmed menu, roomier layout, and the agent speaking without technical jargon.",
+    "previewAsClientHint": "Try seeing it as your client does, from the left-hand menu."
   },
   "Onboarding": {
     "step1Label": "Odoo Connection",
@@ -1840,6 +1850,8 @@
       "accountMove": "விலைப்பட்டியல்",
       "crmLead": "வாய்ப்புகள்",
       "purchaseOrder": "கொள்முதல்"
-    }
+    },
+    "titleDemo": "What I already know about {instance}",
+    "hintDemo": "This is a sample company. Ask me about any of these numbers."
   }
 }

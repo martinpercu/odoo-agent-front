@@ -1195,7 +1195,9 @@ export async function executeAction(
   chatId: string,
   actionContext: ActionContext,
   configId: string,
-  locale: string
+  locale: string,
+  /** Vista previa de audiencia. Sólo `"client"` se honra del lado del server. */
+  audience?: "client"
 ): Promise<ExecuteActionResult> {
   try {
     const res = await authFetch(`${API_BASE}/chat/${chatId}/action`, {
@@ -1206,6 +1208,10 @@ export async function executeAction(
         action: "confirm_action",
         context: actionContext,
         language: locale,
+        // Confirmar una acción es parte de la MISMA conversación: sin esto, el
+        // visitante pregunta en vista cliente y recibe la confirmación con voz de
+        // implementador, en la misma pantalla.
+        ...(audience ? { audience } : {}),
       }),
     });
 
@@ -1854,16 +1860,53 @@ export async function fetchChatHistory(
 
 // ---- Audit History API ----
 
-export interface AuditEntry {
+/** Un campo que el usuario editó sobre la propuesta del agente (sólo Builder). */
+export interface AuditChange {
+  field: string;
+  label: string;
+  from: unknown;
+  to: unknown;
+  description: string;
+}
+
+/**
+ * La entrada técnica: modelo, método y cambios campo a campo.
+ *
+ * ⚠️ Estas son las claves que el backend manda DE VERDAD (`api/audit.py`). El tipo que
+ * había acá antes describía un contrato que el backend nunca implementó — `action` por
+ * `action_type`, `user_edits` por `changes`, y `record_id`/`vals`/`status`/`error_message`
+ * que no existen en ninguna respuesta.
+ */
+export interface AuditEntryBuilder {
   id: string;
-  action: string;
+  thread_id: string;
+  user_id: number | null;
   model: string;
-  record_id: number | null;
-  vals: Record<string, unknown>;
-  user_edits: Record<string, unknown> | null;
-  status: "success" | "error";
-  error_message?: string;
+  action_type: string;
+  original_vals: Record<string, unknown>;
+  final_vals: Record<string, unknown>;
+  changes: AuditChange[];
+  has_edits: boolean;
   created_at: string;
+}
+
+/**
+ * La entrada de audiencia Client (`_client_audit_entry` en el back): **otra forma, no la
+ * misma con campos vacíos** — sin modelo, sin método, sin nombres de campo, y con las
+ * claves en camelCase. Es el recorte que un cliente final tiene que ver.
+ */
+export interface AuditEntryClient {
+  ts: string;
+  summary: string;
+  recordId: number | null;
+  recordName: string | null;
+}
+
+export type AuditEntry = AuditEntryBuilder | AuditEntryClient;
+
+/** Discriminador de las dos formas. `summary` sólo existe en la del cliente. */
+export function isClientAuditEntry(entry: AuditEntry): entry is AuditEntryClient {
+  return "summary" in entry;
 }
 
 export interface FetchAuditResult {
@@ -1873,16 +1916,25 @@ export interface FetchAuditResult {
 }
 
 export async function fetchAuditHistory(
-  chatId: string
+  chatId: string,
+  /** Vista previa de audiencia. Sólo `"client"` se honra del lado del server. */
+  audience?: "client"
 ): Promise<FetchAuditResult> {
   try {
-    const res = await authFetch(`${API_BASE}/chat/${chatId}/audit`);
+    // ⚠️ Es un GET, así que la vista previa viaja como QUERY PARAM — única diferencia
+    // con `/stream` y `/action`, que la reciben en el cuerpo. La regla sigue siendo del
+    // server (`_audience_for_request` sólo honra la bajada a `client`).
+    const qs = audience ? `?audience=${audience}` : "";
+    const res = await authFetch(`${API_BASE}/chat/${chatId}/audit${qs}`);
     const data = await res.json();
     if (res.ok) {
-      const entries = Array.isArray(data)
-        ? data
-        : Array.isArray(data?.entries)
-          ? data.entries
+      // ⚠️ La clave es `audit_logs`. Antes acá se leía `data.entries`, que el backend
+      // **no manda en ninguna respuesta**: el popover devolvía [] siempre y se veía como
+      // "aún no se han ejecutado acciones" — indistinguible de no tener historial.
+      const entries = Array.isArray(data?.audit_logs)
+        ? data.audit_logs
+        : Array.isArray(data)
+          ? data
           : [];
       return { success: true, entries };
     }

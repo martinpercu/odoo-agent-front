@@ -27,7 +27,10 @@
     "no": "नाही",
     "instanceBadge": "इन्स्टन्स",
     "otherInstances": "{count, plural, one {इतर इन्स्टन्समध्ये # चॅट} other {इतर इन्स्टन्समध्ये # चॅट}}",
-    "onlyActiveInstance": "फक्त सक्रिय इन्स्टन्स दाखवा"
+    "onlyActiveInstance": "फक्त सक्रिय इन्स्टन्स दाखवा",
+    "viewAsClient": "View as client",
+    "backToMyView": "Back to my view",
+    "viewAsClientInfo": "Clients get a roomier layout, and the agent says “client” instead of “res.partner”."
   },
   "UserMenu": {
     "guest": "पाहुणे",
@@ -96,7 +99,10 @@
     "micPaused": "रेकॉर्डिंग थांबवले आहे",
     "micDenied": "मायक्रोफोन परवानगी नाकारली",
     "transcribing": "ट्रान्सक्राइब होत आहे...",
-    "transcribeError": "ऑडिओ ट्रान्सक्राइब करता आले नाही"
+    "transcribeError": "ऑडिओ ट्रान्सक्राइब करता आले नाही",
+    "selectConfig": "Choose an instance",
+    "ownGroup": "Your instances",
+    "demoGroup": "Sample companies"
   },
   "ChatMessages": {
     "typingIndicator": "Odoo वर चौकशी करत आहे",
@@ -160,7 +166,8 @@
       "title": "क्रेडेन्शियल्स कॉन्फिगर केलेले नाहीत",
       "desc": "या Odoo कनेक्शनसाठी तुमच्याकडे क्रेडेन्शियल्स कॉन्फिगर केलेले नाहीत. चौकशी चालवण्यासाठी सेटिंग्ज मध्ये सेट करा.",
       "cta": "सेटिंग्ज वर जा"
-    }
+    },
+    "connectionError": "आम्ही विनंती पूर्ण करू शकलो नाही. कनेक्शन तपासा आणि पुन्हा प्रयत्न करा."
   },
   "ChatHistory": {
     "loading": "संवाद लोड होत आहे..."
@@ -597,7 +604,10 @@
     "accessCodePlaceholder": "Your invitation code",
     "accessCodeError": "Registration is for Founding Partners only. To request access, reach out at <mail>martin@theodooagent.com</mail>",
     "requestAccess": "No code yet? <mail>Request access</mail>",
-    "requestAccessEmail": "martin@theodooagent.com"
+    "requestAccessEmail": "martin@theodooagent.com",
+    "demoBannerNamed": "Demo mode — you're looking at {instance}, a sample company.",
+    "previewAsClientBanner": "You're seeing {instance} as your end client would: trimmed menu, roomier layout, and the agent speaking without technical jargon.",
+    "previewAsClientHint": "Try seeing it as your client does, from the left-hand menu."
   },
   "Onboarding": {
     "step1Label": "Odoo Connection",
@@ -1840,6 +1850,8 @@
       "accountMove": "चलने",
       "crmLead": "संधी",
       "purchaseOrder": "खरेदी"
-    }
+    },
+    "titleDemo": "What I already know about {instance}",
+    "hintDemo": "This is a sample company. Ask me about any of these numbers."
   }
 }

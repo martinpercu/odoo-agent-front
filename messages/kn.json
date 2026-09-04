@@ -27,7 +27,10 @@
     "no": "ಇಲ್ಲ",
     "instanceBadge": "ಇನ್‌ಸ್ಟನ್ಸ್",
     "otherInstances": "{count, plural, one {ಇತರ ಇನ್‌ಸ್ಟನ್ಸ್‌ಗಳಲ್ಲಿ # ಚಾಟ್} other {ಇತರ ಇನ್‌ಸ್ಟನ್ಸ್‌ಗಳಲ್ಲಿ # ಚಾಟ್‌ಗಳು}}",
-    "onlyActiveInstance": "ಸಕ್ರಿಯ ಇನ್‌ಸ್ಟನ್ಸ್ ಮಾತ್ರ ತೋರಿಸಿ"
+    "onlyActiveInstance": "ಸಕ್ರಿಯ ಇನ್‌ಸ್ಟನ್ಸ್ ಮಾತ್ರ ತೋರಿಸಿ",
+    "viewAsClient": "View as client",
+    "backToMyView": "Back to my view",
+    "viewAsClientInfo": "Clients get a roomier layout, and the agent says “client” instead of “res.partner”."
   },
   "UserMenu": {
     "guest": "ಅತಿಥಿ",
@@ -96,7 +99,10 @@
     "micPaused": "ರೆಕಾರ್ಡಿಂಗ್ ವಿರಾಮದಲ್ಲಿದೆ",
     "micDenied": "ಮೈಕ್ರೊಫೋನ್ ಅನುಮತಿ ನಿರಾಕರಿಸಲಾಗಿದೆ",
     "transcribing": "ಪ್ರತಿಲೇಖನ ಮಾಡಲಾಗುತ್ತಿದೆ...",
-    "transcribeError": "ಆಡಿಯೋವನ್ನು ಪ್ರತಿಲೇಖನ ಮಾಡಲಾಗಲಿಲ್ಲ"
+    "transcribeError": "ಆಡಿಯೋವನ್ನು ಪ್ರತಿಲೇಖನ ಮಾಡಲಾಗಲಿಲ್ಲ",
+    "selectConfig": "Choose an instance",
+    "ownGroup": "Your instances",
+    "demoGroup": "Sample companies"
   },
   "ChatMessages": {
     "typingIndicator": "Odoo ಪ್ರಶ್ನಿಸಲಾಗುತ್ತಿದೆ",
@@ -160,7 +166,8 @@
       "title": "ರುಜುವಾತುಗಳನ್ನು ಸಂರಚಿಸಲಾಗಿಲ್ಲ",
       "desc": "ಈ Odoo ಸಂಪರ್ಕಕ್ಕಾಗಿ ನಿಮಗೆ ರುಜುವಾತುಗಳನ್ನು ಸಂರಚಿಸಲಾಗಿಲ್ಲ. ಪ್ರಶ್ನೆಗಳನ್ನು ಚಲಾಯಿಸಲು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಹೊಂದಿಸಿ.",
       "cta": "ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ"
-    }
+    },
+    "connectionError": "ವಿನಂತಿಯನ್ನು ಪೂರ್ಣಗೊಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಸಂಪರ್ಕವನ್ನು ಪರಿಶೀಲಿಸಿ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ."
   },
   "ChatHistory": {
     "loading": "ಸಂಭಾಷಣೆ ಲೋಡ್ ಆಗುತ್ತಿದೆ..."
@@ -597,7 +604,10 @@
     "accessCodePlaceholder": "Your invitation code",
     "accessCodeError": "Registration is for Founding Partners only. To request access, reach out at <mail>martin@theodooagent.com</mail>",
     "requestAccess": "No code yet? <mail>Request access</mail>",
-    "requestAccessEmail": "martin@theodooagent.com"
+    "requestAccessEmail": "martin@theodooagent.com",
+    "demoBannerNamed": "Demo mode — you're looking at {instance}, a sample company.",
+    "previewAsClientBanner": "You're seeing {instance} as your end client would: trimmed menu, roomier layout, and the agent speaking without technical jargon.",
+    "previewAsClientHint": "Try seeing it as your client does, from the left-hand menu."
   },
   "Onboarding": {
     "step1Label": "Odoo Connection",
@@ -1840,6 +1850,8 @@
       "accountMove": "ಸರಕುಪಟ್ಟಿ",
       "crmLead": "ಅವಕಾಶಗಳು",
       "purchaseOrder": "ಖರೀದಿ"
-    }
+    },
+    "titleDemo": "What I already know about {instance}",
+    "hintDemo": "This is a sample company. Ask me about any of these numbers."
   }
 }

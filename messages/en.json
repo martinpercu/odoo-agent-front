@@ -27,7 +27,10 @@
     "no": "No",
     "instanceBadge": "Instance",
     "otherInstances": "{count, plural, one {# chat in another instance} other {# chats in other instances}}",
-    "onlyActiveInstance": "Show only the active instance"
+    "onlyActiveInstance": "Show only the active instance",
+    "viewAsClient": "View as client",
+    "backToMyView": "Back to my view",
+    "viewAsClientInfo": "Clients get a roomier layout, and the agent says “client” instead of “res.partner”."
   },
   "UserMenu": {
     "guest": "Guest",
@@ -96,7 +99,10 @@
     "micPaused": "Recording paused",
     "micDenied": "Microphone permission denied",
     "transcribing": "Transcribing...",
-    "transcribeError": "Couldn't transcribe the audio"
+    "transcribeError": "Couldn't transcribe the audio",
+    "selectConfig": "Choose an instance",
+    "ownGroup": "Your instances",
+    "demoGroup": "Sample companies"
   },
   "ChatMessages": {
     "typingIndicator": "Querying Odoo",
@@ -160,7 +166,8 @@
       "title": "Credentials not configured",
       "desc": "You don't have credentials configured for this Odoo connection. Set them up in Settings to run queries.",
       "cta": "Go to Settings"
-    }
+    },
+    "connectionError": "We couldn't complete the query. Check the connection and try again."
   },
   "ChatHistory": {
     "loading": "Loading conversation..."
@@ -597,7 +604,10 @@
     "accessCodePlaceholder": "Your invitation code",
     "accessCodeError": "Registration is for Founding Partners only. To request access, reach out at <mail>martin@theodooagent.com</mail>",
     "requestAccess": "No code yet? <mail>Request access</mail>",
-    "requestAccessEmail": "martin@theodooagent.com"
+    "requestAccessEmail": "martin@theodooagent.com",
+    "demoBannerNamed": "Demo mode — you're looking at {instance}, a sample company.",
+    "previewAsClientBanner": "You're seeing {instance} as your end client would: trimmed menu, roomier layout, and the agent speaking without technical jargon.",
+    "previewAsClientHint": "Try seeing it as your client does, from the left-hand menu."
   },
   "Onboarding": {
     "step1Label": "Odoo Connection",
@@ -1840,6 +1850,8 @@
       "accountMove": "Invoices",
       "crmLead": "Opportunities",
       "purchaseOrder": "Purchases"
-    }
+    },
+    "titleDemo": "What I already know about {instance}",
+    "hintDemo": "This is a sample company. Ask me about any of these numbers."
   }
 }

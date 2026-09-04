@@ -27,7 +27,10 @@
     "no": "No",
     "instanceBadge": "Instancia",
     "otherInstances": "{count, plural, one {# chat de otra instancia} other {# chats de otras instancias}}",
-    "onlyActiveInstance": "Ver sólo la instancia activa"
+    "onlyActiveInstance": "Ver sólo la instancia activa",
+    "viewAsClient": "Ver como cliente",
+    "backToMyView": "Volver a mi vista",
+    "viewAsClientInfo": "Los clientes ven una vista más espaciada y el agente usa términos como «cliente» en lugar de «res.partner»."
   },
   "UserMenu": {
     "guest": "Invitado",
@@ -96,7 +99,10 @@
     "micPaused": "Grabación en pausa",
     "micDenied": "Permiso de micrófono denegado",
     "transcribing": "Transcribiendo...",
-    "transcribeError": "No se pudo transcribir el audio"
+    "transcribeError": "No se pudo transcribir el audio",
+    "selectConfig": "Elegí una instancia",
+    "ownGroup": "Tus instancias",
+    "demoGroup": "Empresas de ejemplo"
   },
   "ChatMessages": {
     "typingIndicator": "Consultando Odoo",
@@ -160,7 +166,8 @@
       "title": "Credenciales no configuradas",
       "desc": "No tienes credenciales configuradas para esta conexión Odoo. Configúralas en Ajustes para poder realizar consultas.",
       "cta": "Ir a Ajustes"
-    }
+    },
+    "connectionError": "No pudimos completar la consulta. Revisá la conexión e intentá de nuevo."
   },
   "ChatHistory": {
     "loading": "Cargando conversación..."
@@ -597,7 +604,10 @@
     "accessCodePlaceholder": "Tu código de invitación",
     "accessCodeError": "El registro es solo para Founding Partners. Para solicitar acceso escríbenos a <mail>martin@theodooagent.com</mail>",
     "requestAccess": "¿No tienes código? <mail>Pide acceso</mail>",
-    "requestAccessEmail": "martin@theodooagent.com"
+    "requestAccessEmail": "martin@theodooagent.com",
+    "demoBannerNamed": "Modo Demo — estás mirando {instance}, una empresa de ejemplo.",
+    "previewAsClientBanner": "Estás viendo {instance} como lo vería tu cliente final: menú recortado, menos densidad y el agente hablando sin jerga técnica.",
+    "previewAsClientHint": "Probá verlo como lo ve tu cliente, desde el menú de la izquierda."
   },
   "Onboarding": {
     "step1Label": "Conexión Odoo",
@@ -1840,6 +1850,8 @@
       "accountMove": "Facturas",
       "crmLead": "Oportunidades",
       "purchaseOrder": "Compras"
-    }
+    },
+    "titleDemo": "Esto ya sé de {instance}",
+    "hintDemo": "Es una empresa de ejemplo. Preguntame por cualquiera de estos números."
   }
 }
