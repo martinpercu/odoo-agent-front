@@ -21,6 +21,7 @@ import { useOdooConfig } from "@/hooks/use-odoo-config";
 import { instanceLabel } from "@/lib/instance-label";
 import { UserMenu } from "@/components/chat/user-menu";
 import { ActiveInstanceBadge } from "@/components/chat/active-instance-badge";
+import { AudiencePreviewToggle } from "@/components/chat/audience-preview-toggle";
 import type { ChatGroup } from "@/lib/types";
 
 interface SidebarProps {
@@ -146,6 +147,12 @@ export function Sidebar({
           bajo el que se lee todo lo que sigue, así que tiene que estar antes de la
           acción que abre una consulta nueva, no después. */}
       <ActiveInstanceBadge collapsed={collapsed} />
+
+      {/* ⭐ "Ver como lo ve tu cliente" — debajo del cambiador de instancias, y en SU lugar
+          cuando hay una sola (ver `active-instance-badge`). Lleva el borde inferior de los
+          dos porque es el último: el cartel puede no dibujarse, este control no —
+          para un implementador está siempre. */}
+      <AudiencePreviewToggle collapsed={collapsed} />
 
       {/* New Chat Button */}
       <div className="p-3">

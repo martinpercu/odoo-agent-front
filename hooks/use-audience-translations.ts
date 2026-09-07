@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useSession } from "@/hooks/use-session";
+import { useAudience } from "@/hooks/use-audience";
 
 /**
  * Returns a translator scoped to either `Builder.<namespace>` or `Client.<namespace>`
@@ -21,8 +21,11 @@ import { useSession } from "@/hooks/use-session";
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function useAudienceT(namespace: string): any {
-  const { meData } = useSession();
-  const role = meData?.user?.role;
-  const audience = role === "ADMIN" || role === "SUPERADMIN" ? "Builder" : "Client";
-  return useTranslations(`${audience}.${namespace}`);
+  // ⚠️ La audiencia NO se re-deriva del rol acá — sale de `useAudience()`, que es el
+  // único lugar donde se decide. Cuando ese hook devuelve "client" por una vista
+  // previa, el copy tiene que acompañar: media pantalla en voz de implementador y la
+  // otra media en voz de concierge no es ninguna de las dos.
+  const { audience } = useAudience();
+  const root = audience === "builder" ? "Builder" : "Client";
+  return useTranslations(`${root}.${namespace}`);
 }

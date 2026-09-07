@@ -32,6 +32,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useSession } from "@/hooks/use-session";
 import { instanceLabel } from "@/lib/instance-label";
 import { useOdooConfig } from "@/hooks/use-odoo-config";
+import { useAudience } from "@/hooks/use-audience";
 import { useIconSize } from "@/hooks/use-icon-size";
 import { IS_AUTH_ENABLED } from "@/lib/supabase";
 import { VISIBLE_LOCALES } from "@/i18n/routing";
@@ -137,7 +138,16 @@ export function UserMenu({ collapsed = false, onNavigate }: UserMenuProps) {
   const email = meData?.user?.email ?? user?.email ?? null;
   const initials = getInitials(email);
   const isSuperAdmin = role === "SUPERADMIN";
-  const isClient = role !== "ADMIN" && role !== "SUPERADMIN";
+  // ⭐ **De acá sale el "menú más chiquito"**. `isClient` esconde el manual técnico,
+  // los planes y el panel de ajustes — la superficie COMERCIAL y técnica del producto,
+  // que es justo lo que un implementador no quiere que vea su cliente final.
+  //
+  // ⚠️ Sale de `useAudience()` y no del rol para que la vista previa del demo lo mueva.
+  // Como el override sólo puede BAJAR (builder → client), esto únicamente puede
+  // esconder entradas, nunca mostrar una que el rol no habilitaba: no hay forma de que
+  // aparezca un link a una pantalla que después va a rebotar.
+  const { audience } = useAudience();
+  const isClient = audience === "client";
   const settingsHref = user && !meData?.org ? "/onboarding" : "/settings";
   const showSettings = !isClient;
 
@@ -171,12 +181,19 @@ export function UserMenu({ collapsed = false, onNavigate }: UserMenuProps) {
     return (
       <div ref={ref} className="relative">
         <div className="flex flex-col gap-0.5">
-          {/* What is TheOdooAgent? */}
-          <IntroSidebarItem
-            collapsed={collapsed}
-            onOpened={onNavigate}
-            className={`${sidebarItemClass} ${collapsed ? "justify-center" : ""}`}
-          />
+          {/* ⚠️ Esta rama es la del VISITANTE ANÓNIMO, y dibujaba estos tres items sin
+              ningún gate de audiencia — porque hasta el demo plural un anónimo era
+              siempre Builder y la pregunta no se hacía. Es justo la rama por la que
+              pasa el demo, así que sin esto la vista previa "como cliente" cambiaba la
+              densidad y dejaba el menú entero: la mitad de lo que se quiere mostrar.
+              `HowItWorksSidebarItem` NO se gatea — se muestra a todos los roles. */}
+          {!isClient && (
+            <IntroSidebarItem
+              collapsed={collapsed}
+              onOpened={onNavigate}
+              className={`${sidebarItemClass} ${collapsed ? "justify-center" : ""}`}
+            />
+          )}
 
           {/* How does it work? */}
           <HowItWorksSidebarItem
@@ -185,27 +202,31 @@ export function UserMenu({ collapsed = false, onNavigate }: UserMenuProps) {
             className={`${sidebarItemClass} ${collapsed ? "justify-center" : ""}`}
           />
 
-          {/* Technical manual for implementers */}
-          <Link
-            href="/implementers"
-            onClick={() => onNavigate?.()}
-            className={`${sidebarItemClass} ${collapsed ? "justify-center" : ""}`}
-            aria-label={collapsed ? t("implementerManual") : undefined}
-          >
-            <BookOpen size={iconInline} strokeWidth={1.5} className="shrink-0" />
-            {!collapsed && <span className="flex-1">{t("implementerManual")}</span>}
-          </Link>
+          {!isClient && (
+            <>
+              {/* Technical manual for implementers */}
+              <Link
+                href="/implementers"
+                onClick={() => onNavigate?.()}
+                className={`${sidebarItemClass} ${collapsed ? "justify-center" : ""}`}
+                aria-label={collapsed ? t("implementerManual") : undefined}
+              >
+                <BookOpen size={iconInline} strokeWidth={1.5} className="shrink-0" />
+                {!collapsed && <span className="flex-1">{t("implementerManual")}</span>}
+              </Link>
 
-          {/* Pricing */}
-          <Link
-            href="/pricing"
-            onClick={() => onNavigate?.()}
-            className={`${sidebarItemClass} ${collapsed ? "justify-center" : ""}`}
-            aria-label={collapsed ? t("pricing") : undefined}
-          >
-            <Tag size={iconInline} strokeWidth={1.5} className="shrink-0" />
-            {!collapsed && <span className="flex-1">{t("pricing")}</span>}
-          </Link>
+              {/* Pricing */}
+              <Link
+                href="/pricing"
+                onClick={() => onNavigate?.()}
+                className={`${sidebarItemClass} ${collapsed ? "justify-center" : ""}`}
+                aria-label={collapsed ? t("pricing") : undefined}
+              >
+                <Tag size={iconInline} strokeWidth={1.5} className="shrink-0" />
+                {!collapsed && <span className="flex-1">{t("pricing")}</span>}
+              </Link>
+            </>
+          )}
 
           {/* Theme */}
           <button

@@ -633,6 +633,27 @@ export interface OdooConfigSummary {
   // Present on the instance-list endpoint for ADMIN.
   counts?: InstanceCounts;
   seats?: InstanceSeats;
+  /**
+   * Demo plural (PLAN_INSTANCIAS/05). **Dos flags, no uno**, y la diferencia importa:
+   *
+   * - `is_demo`  — los datos son nuestros, de mentira, y la instancia se restaura sola.
+   *                Su credencial vive en la fila del backend, no en el usuario: por eso
+   *                una instancia de demo llega siempre con `connection_status: "active"`
+   *                y no hay Connection que armar.
+   * - `is_public` — un anónimo la puede elegir en el landing. `caos` va a ser
+   *                `is_demo` sin `is_public`: visible para implementadores, no en el landing.
+   *
+   * ⚠️ `isDemoMode` sale de ACÁ (`activeConfig?.is_demo`) y no de `activeConfigId === "demo"`.
+   * El literal identificaba una instancia cuando había una sola; con cuatro no identifica
+   * nada, y toda pantalla que siga comparando contra él va a tratar tres de las cuatro
+   * como si fueran la instancia de un cliente real.
+   */
+  is_demo?: boolean;
+  is_public?: boolean;
+  /** Identidad estable de una instancia del parque ("comercial", "retail"). */
+  demo_slug?: string | null;
+  /** Orden en el selector del landing. */
+  demo_order?: number | null;
 }
 
 export interface UserOdooCredential {
@@ -724,7 +745,18 @@ export interface MeResponse {
   subscription: MeSubscription | null;
   slots_used: SlotsUsed | null;
   odoo_configs: OdooConfigSummary[];
+  /**
+   * @deprecated Lo reemplaza {@link MeResponse.demo_instances}. Se mantiene un release
+   * para que el front viejo no se quede sin demo entre el deploy del back y el del front.
+   */
   demo_available?: boolean;
+  /**
+   * Las instancias del parque que este usuario puede elegir (PLAN_INSTANCIAS/05).
+   * Un anónimo y un CLIENT_USER reciben las públicas; un implementador recibe además
+   * las de demo no públicas. **La lista no es el permiso**: quién puede usar cuál lo
+   * decide el backend en `resolve_config_for`, así que no hay nada que re-chequear acá.
+   */
+  demo_instances?: OdooConfigSummary[];
   voice_features?: VoiceFeatures;
   /**
    * The EFFECTIVE timezone the backend will use to interpret "at 8:00" for this

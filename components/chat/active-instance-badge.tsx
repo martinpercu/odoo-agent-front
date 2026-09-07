@@ -8,7 +8,7 @@ import { useRouter, usePathname } from "@/i18n/navigation";
 import { useChatContext } from "@/components/app-shell";
 import { useIconSize } from "@/hooks/use-icon-size";
 import { useOdooConfig } from "@/hooks/use-odoo-config";
-import { useSession } from "@/hooks/use-session";
+import { useAudience } from "@/hooks/use-audience";
 import { instanceLabel } from "@/lib/instance-label";
 
 /**
@@ -38,19 +38,31 @@ export function ActiveInstanceBadge({ collapsed = false }: { collapsed?: boolean
   const t = useTranslations("Sidebar");
   const router = useRouter();
   const pathname = usePathname();
-  const { meData } = useSession();
-  const { configs, activeConfigId, setActiveConfigId, isDemoMode } = useOdooConfig();
+  const { configs, activeConfigId, setActiveConfigId } = useOdooConfig();
   const { setCurrentChatId, stopStreaming } = useChatContext();
   const iconBtn = useIconSize("button");
 
-  const role = meData?.user?.role;
-  const isBuilder = role === "ADMIN" || role === "SUPERADMIN";
+  // Audiencia, no rol: un cliente final tiene UNA instancia, así que nombrarla no
+  // distingue nada — y en la vista previa del demo el cartel tiene que irse, porque su
+  // ausencia es parte de lo que se está mostrando.
+  const { audience } = useAudience();
+  const isBuilder = audience === "builder";
   const name = instanceLabel(configs.find((c) => c.id === activeConfigId));
 
   const [textHover, setTextHover] = useState(false);
   const [btnHover, setBtnHover] = useState(false);
 
-  if (!isBuilder || isDemoMode || !name) return null;
+  // ⚠️ **En demo AHORA se muestra** (PLAN_INSTANCIAS/05 §4). Se escondía cuando la
+  // demo era una sola instancia y el cartel no distinguía nada. Con el parque es al
+  // revés: es la pregunta más útil de la pantalla, y la flecha que cicla instancias
+  // es literalmente lo que D7 viene a mostrar —un implementador con varios clientes
+  // conectados, cambiando de cliente como lo va a hacer de verdad.
+  //
+  // ⚠️ **Con UNA sola instancia no se dibuja** (2026-09-02): este cartel es un CAMBIADOR,
+  // y con una sola no hay nada que ciclar — la flecha quedaba permanentemente
+  // deshabilitada y la fila decía un nombre que no distingue nada de nada. Esa posición
+  // pasa a ocuparla `AudiencePreviewToggle`, que sí tiene algo que hacer ahí.
+  if (!isBuilder || !name || configs.length < 2) return null;
 
   const isActive = textHover || btnHover;
 
@@ -69,14 +81,39 @@ export function ActiveInstanceBadge({ collapsed = false }: { collapsed?: boolean
 
   // Colapsado queda sólo el ícono; el nombre viaja en el `title` para que siga siendo
   // recuperable sin expandir.
+  // ⚠️ Colapsado el cartel CICLA, no expande (2026-09-04): es la única acción que ese
+  // ícono puede ofrecer sin desplegar nada, y repetir "expandir el sidebar" —que ya hacen
+  // el logo, el resto del panel y el cursor— no agrega nada. Por eso hace `stopPropagation`
+  // sobre el click-para-expandir del contenedor. Y por eso mismo NEUTRALIZA el cursor
+  // (`cursor-default`): el de flecha-expandir que hereda del sidebar colapsado promete
+  // desplegar el panel, que es justo lo que este click ya no hace. Lo único que responde
+  // al hover es el ícono, que se pone un azul más oscuro.
   if (collapsed) {
     return (
-      <div className="border-b border-sidebar-border px-3 pb-3 pt-3">
+      <div className="px-3 pt-3">
         <div
-          className="flex h-btn-md items-center justify-center rounded-btn bg-sidebar-hover"
+          role="button"
+          tabIndex={0}
+          className="flex h-btn-md cursor-default items-center justify-center rounded-btn bg-sidebar-hover"
           title={`${t("instanceBadge")}: ${name}`}
+          aria-label={`${t("instanceBadge")}: ${name}`}
+          onClick={(e) => { e.stopPropagation(); handleCycleNext(); }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              e.stopPropagation();
+              handleCycleNext();
+            }
+          }}
+          onMouseEnter={() => setBtnHover(true)}
+          onMouseLeave={() => setBtnHover(false)}
         >
-          <Server size={iconBtn} strokeWidth={1.5} className="text-accent" aria-hidden />
+          <Server
+            size={iconBtn}
+            strokeWidth={1.5}
+            className={btnHover ? "text-accent-hover" : "text-accent"}
+            aria-hidden
+          />
           <span className="sr-only">{`${t("instanceBadge")}: ${name}`}</span>
         </div>
       </div>
@@ -84,7 +121,7 @@ export function ActiveInstanceBadge({ collapsed = false }: { collapsed?: boolean
   }
 
   return (
-    <div className="border-b border-sidebar-border px-3 pb-3 pt-3">
+    <div className="px-3 pt-3">
       <div className="flex items-center gap-3 rounded-btn bg-sidebar-hover px-3 py-2">
         <Server
           size={iconBtn}

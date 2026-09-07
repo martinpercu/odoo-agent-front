@@ -27,7 +27,10 @@
     "no": "Non",
     "instanceBadge": "Instance",
     "otherInstances": "{count, plural, one {# conversation dans une autre instance} other {# conversations dans d'autres instances}}",
-    "onlyActiveInstance": "Afficher uniquement l'instance active"
+    "onlyActiveInstance": "Afficher uniquement l'instance active",
+    "viewAsClient": "Vue client",
+    "backToMyView": "Revenir à ma vue",
+    "viewAsClientInfo": "Les clients voient une mise en page plus aérée et l’agent dit « client » au lieu de « res.partner »."
   },
   "UserMenu": {
     "guest": "Invité",
@@ -96,7 +99,10 @@
     "micPaused": "Enregistrement en pause",
     "micDenied": "Autorisation du microphone refusée",
     "transcribing": "Transcription en cours...",
-    "transcribeError": "Impossible de transcrire l'audio"
+    "transcribeError": "Impossible de transcrire l'audio",
+    "selectConfig": "Choisir une instance",
+    "ownGroup": "Vos instances",
+    "demoGroup": "Entreprises d'exemple"
   },
   "ChatMessages": {
     "typingIndicator": "Interrogation d'Odoo",
@@ -160,7 +166,8 @@
       "title": "Identifiants non configurés",
       "desc": "Vous n'avez pas d'identifiants configurés pour cette connexion Odoo. Configurez-les dans les Paramètres.",
       "cta": "Aller aux Paramètres"
-    }
+    },
+    "connectionError": "Impossible de terminer la requête. Vérifiez la connexion et réessayez."
   },
   "ChatHistory": {
     "loading": "Chargement de la conversation..."
@@ -597,7 +604,10 @@
     "accessCodePlaceholder": "Votre code d'invitation",
     "accessCodeError": "L'inscription est réservée aux Founding Partners. Pour demander l'accès, contactez-nous à <mail>martin@theodooagent.com</mail>",
     "requestAccess": "Pas encore de code ? <mail>Demander un accès</mail>",
-    "requestAccessEmail": "martin@theodooagent.com"
+    "requestAccessEmail": "martin@theodooagent.com",
+    "demoBannerNamed": "Mode démo — vous consultez {instance}, une entreprise d'exemple.",
+    "previewAsClientBanner": "Vous voyez {instance} comme le verrait votre client final : menu réduit, densité allégée et l'agent sans jargon technique.",
+    "previewAsClientHint": "Essayez de le voir comme votre client, depuis le menu de gauche."
   },
   "Onboarding": {
     "step1Label": "Connexion Odoo",
@@ -1840,6 +1850,8 @@
       "accountMove": "Factures",
       "crmLead": "Opportunités",
       "purchaseOrder": "Achats"
-    }
+    },
+    "titleDemo": "Ce que je sais déjà de {instance}",
+    "hintDemo": "C'est une entreprise d'exemple. Posez-moi une question sur ces chiffres."
   }
 }

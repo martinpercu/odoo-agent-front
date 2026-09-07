@@ -3,34 +3,53 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
-import { Clock, CheckCircle2, AlertTriangle, Loader2 } from "lucide-react";
-import { fetchAuditHistory } from "@/lib/api";
+import { Clock, CheckCircle2, Loader2 } from "lucide-react";
+import { fetchAuditHistory, isClientAuditEntry } from "@/lib/api";
 import type { AuditEntry } from "@/lib/api";
+import { useAudience } from "@/hooks/use-audience";
+import { DocNum } from "@/components/ui/doc-num";
 
 interface AuditHistoryPopoverProps {
   chatId: string;
 }
 
+/**
+ * **Historial de acciones ejecutadas** en esta conversación.
+ *
+ * Renderiza DOS formas distintas, no una con campos vacíos: la técnica (modelo, método,
+ * cambios campo a campo) y la del cliente (`{ts, summary, recordName}` — sin una sola
+ * palabra de Odoo). Cuál llega la decide el backend según la audiencia.
+ *
+ * ⭐ Y por eso este popover importa para la vista previa "ver como cliente": es la
+ * pantalla del producto que MÁS jerga técnica muestra, o sea justo lo que un implementador
+ * quiere comprobar que su cliente no ve.
+ */
 export function AuditHistoryPopover({ chatId }: AuditHistoryPopoverProps) {
   const [open, setOpen] = useState(false);
   const [entries, setEntries] = useState<AuditEntry[]>([]);
   const [loading, setLoading] = useState(false);
-  const [loaded, setLoaded] = useState(false);
+  const [loadedKey, setLoadedKey] = useState<string | null>(null);
   const popoverRef = useRef<HTMLDivElement>(null);
   const t = useTranslations("ChatMessages");
+  const { isPreviewingAsClient } = useAudience();
+
+  // ⚠️ La caché se llavea por chat Y por audiencia. Antes era un `loaded` booleano, que
+  // no se invalidaba **nunca**: cambiar de vista no volvía a pedir (se seguía viendo el
+  // detalle técnico), y abrir el popover en otro chat mostraba las acciones del anterior.
+  const loadKey = `${chatId}:${isPreviewingAsClient ? "client" : "builder"}`;
 
   useEffect(() => {
-    if (!open || loaded) return;
+    if (!open || loadedKey === loadKey) return;
     setLoading(true);
-    fetchAuditHistory(chatId)
+    fetchAuditHistory(chatId, isPreviewingAsClient ? "client" : undefined)
       .then((result) => {
         if (result.success && Array.isArray(result.entries)) {
           setEntries(result.entries);
         }
-        setLoaded(true);
+        setLoadedKey(loadKey);
       })
       .finally(() => setLoading(false));
-  }, [open, loaded, chatId]);
+  }, [open, loadedKey, loadKey, chatId, isPreviewingAsClient]);
 
   // Close on outside click
   useEffect(() => {
@@ -86,40 +105,56 @@ export function AuditHistoryPopover({ chatId }: AuditHistoryPopoverProps) {
               )}
 
               {!loading &&
-                entries.map((entry) => (
-                  <div
-                    key={entry.id}
-                    className="mb-1 rounded-md px-3 py-2 text-small transition-colors hover:bg-raised"
-                  >
-                    <div className="flex items-center gap-2">
-                      {entry.status === "success" ? (
+                entries.map((entry, i) =>
+                  isClientAuditEntry(entry) ? (
+                    /* Cliente: qué pasó y sobre qué registro. Ni modelo, ni método, ni
+                       nombres de campo — y sin `font-technical`, que es la única
+                       superficie mono que el cliente no debería ver acá. */
+                    <div
+                      key={`${entry.ts}-${i}`}
+                      className="mb-1 rounded-md px-3 py-2 text-small transition-colors hover:bg-raised"
+                    >
+                      <div className="flex items-center gap-2">
                         <CheckCircle2 size={14} strokeWidth={1.5} className="shrink-0 text-success-solid" />
-                      ) : (
-                        <AlertTriangle size={14} strokeWidth={1.5} className="shrink-0 text-error" />
-                      )}
-                      <span className="font-medium font-technical">
-                        {entry.action} &middot; {entry.model}
-                      </span>
-                    </div>
-                    {entry.record_id && (
-                      <span className="ml-6 font-technical text-text-muted">
-                        ID: {entry.record_id}
-                      </span>
-                    )}
-                    {entry.user_edits && Object.keys(entry.user_edits).length > 0 && (
-                      <div className="ml-6 mt-1 font-technical text-text-secondary">
-                        {t("audit.userEdited")}:{" "}
-                        {Object.keys(entry.user_edits).join(", ")}
+                        <span className="font-medium">{entry.summary}</span>
                       </div>
-                    )}
-                    {entry.error_message && (
-                      <div className="ml-6 mt-1 font-technical text-error">{entry.error_message}</div>
-                    )}
-                    <div className="ml-6 mt-0.5 text-text-muted">
-                      {new Date(entry.created_at).toLocaleString()}
+                      {entry.recordName && (
+                        <div className="ml-6 text-text-secondary">{entry.recordName}</div>
+                      )}
+                      {entry.recordId !== null && (
+                        <div className="ml-6">
+                          <DocNum>#{entry.recordId}</DocNum>
+                        </div>
+                      )}
+                      <div className="ml-6 mt-0.5 text-text-muted">
+                        {new Date(entry.ts).toLocaleString()}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ) : (
+                    <div
+                      key={entry.id}
+                      className="mb-1 rounded-md px-3 py-2 text-small transition-colors hover:bg-raised"
+                    >
+                      <div className="flex items-center gap-2">
+                        <CheckCircle2 size={14} strokeWidth={1.5} className="shrink-0 text-success-solid" />
+                        <span className="font-technical font-medium">
+                          {entry.action_type} &middot; {entry.model}
+                        </span>
+                      </div>
+                      {/* `changes` ya viene con la etiqueta localizada de cada campo y su
+                          antes/después: es lo que el usuario editó sobre la propuesta. */}
+                      {entry.has_edits && entry.changes?.length > 0 && (
+                        <div className="ml-6 mt-1 font-technical text-text-secondary">
+                          {t("audit.userEdited")}:{" "}
+                          {entry.changes.map((c) => c.label || c.field).join(", ")}
+                        </div>
+                      )}
+                      <div className="ml-6 mt-0.5 text-text-muted">
+                        {new Date(entry.created_at).toLocaleString()}
+                      </div>
+                    </div>
+                  )
+                )}
             </div>
           </motion.div>
         )}

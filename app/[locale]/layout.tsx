@@ -7,6 +7,7 @@ import { routing } from "@/i18n/routing";
 import { AuthProvider } from "@/hooks/use-auth";
 import { SessionProvider } from "@/hooks/use-session";
 import { OdooConfigProvider } from "@/hooks/use-odoo-config";
+import { AudienceProvider } from "@/hooks/use-audience";
 import { PinnedInsightsProvider } from "@/hooks/use-pinned-insights";
 import { NotificationProvider } from "@/hooks/use-notifications";
 import { ToastProvider } from "@/components/ui/error-toast";
@@ -69,6 +70,9 @@ export default async function LocaleLayout({ children, params }: Props) {
             <SessionProvider>
               <ThemeInitializer />
               <OdooConfigProvider>
+                {/* Sólo necesita el rol (de SessionProvider). Queda acá adentro para no
+                    mover la pila; ya no depende de `isDemoMode`. */}
+                <AudienceProvider>
                 <ToastProvider>
                   <LimitReachedModalProvider>
                     <NotificationProvider>
@@ -79,6 +83,7 @@ export default async function LocaleLayout({ children, params }: Props) {
                     </NotificationProvider>
                   </LimitReachedModalProvider>
                 </ToastProvider>
+                </AudienceProvider>
               </OdooConfigProvider>
             </SessionProvider>
           </AuthProvider>

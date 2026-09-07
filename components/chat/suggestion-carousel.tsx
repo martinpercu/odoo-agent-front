@@ -22,7 +22,7 @@ interface Props {
 }
 
 export function SuggestionCarousel({ onSelect, getLabel }: Props) {
-  const { activeConfigId, isDemoMode } = useOdooConfig();
+  const { activeConfigId } = useOdooConfig();
   /**
    * El uso real de la instancia (quick-wins §7). Se pide **después** del render y
    * sin bloquear: la primera medición puede costar ~1s contra una instancia
@@ -56,8 +56,15 @@ export function SuggestionCarousel({ onSelect, getLabel }: Props) {
   }
 
   useEffect(() => {
-    // En demo no se filtra: la instancia de demo es nuestra y tiene de todo.
-    if (!activeConfigId || isDemoMode) return;
+    // ⚠️ **La excepción de demo se sacó** (PLAN_INSTANCIAS/05 §4). Decía "en demo no
+    // se filtra: la instancia de demo es nuestra y tiene de todo", y era cierto
+    // mientras hubo UNA. Con el parque es lo contrario: `comercial` no tiene
+    // inventario y `retail` no tiene CRM, así que sin filtrar le ofrecemos a un
+    // visitante "¿qué tengo que reponer?" sobre una agencia comercial y la respuesta
+    // es vacía — el peor primer resultado posible, y justo donde se decide si el
+    // producto sirve. Que esto funcione depende de que el backend SONDEE las
+    // instancias de demo (`capability_cache.py`), cosa que ahora hace.
+    if (!activeConfigId) return;
     let vivo = true;
     fetchInstanceUsage(activeConfigId).then((u) => {
       if (vivo) setUsage(u);
@@ -65,7 +72,7 @@ export function SuggestionCarousel({ onSelect, getLabel }: Props) {
     return () => {
       vivo = false;
     };
-  }, [activeConfigId, isDemoMode]);
+  }, [activeConfigId]);
 
   useEffect(() => {
     poolRef.current = suggestionsForInstance(usage);

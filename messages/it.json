@@ -27,7 +27,10 @@
     "no": "No",
     "instanceBadge": "Istanza",
     "otherInstances": "{count, plural, one {# chat in un'altra istanza} other {# chat in altre istanze}}",
-    "onlyActiveInstance": "Mostra solo l'istanza attiva"
+    "onlyActiveInstance": "Mostra solo l'istanza attiva",
+    "viewAsClient": "Vista cliente",
+    "backToMyView": "Torna alla mia vista",
+    "viewAsClientInfo": "I clienti vedono un layout più arioso e l’agente dice “cliente” invece di “res.partner”."
   },
   "UserMenu": {
     "guest": "Ospite",
@@ -96,7 +99,10 @@
     "micPaused": "Registrazione in pausa",
     "micDenied": "Permesso del microfono negato",
     "transcribing": "Trascrizione in corso...",
-    "transcribeError": "Impossibile trascrivere l'audio"
+    "transcribeError": "Impossibile trascrivere l'audio",
+    "selectConfig": "Scegli un'istanza",
+    "ownGroup": "Le tue istanze",
+    "demoGroup": "Aziende di esempio"
   },
   "ChatMessages": {
     "typingIndicator": "Interrogazione Odoo in corso",
@@ -160,7 +166,8 @@
       "title": "Credenziali non configurate",
       "desc": "Non hai credenziali configurate per questa connessione Odoo. Configurale nelle Impostazioni per eseguire query.",
       "cta": "Vai alle Impostazioni"
-    }
+    },
+    "connectionError": "Non siamo riusciti a completare la richiesta. Controlla la connessione e riprova."
   },
   "ChatHistory": {
     "loading": "Caricamento conversazione..."
@@ -597,7 +604,10 @@
     "accessCodePlaceholder": "Il tuo codice invito",
     "accessCodeError": "La registrazione è riservata ai Founding Partners. Per richiedere l'accesso, scrivici a <mail>martin@theodooagent.com</mail>",
     "requestAccess": "Non hai un codice? <mail>Richiedi l’accesso</mail>",
-    "requestAccessEmail": "martin@theodooagent.com"
+    "requestAccessEmail": "martin@theodooagent.com",
+    "demoBannerNamed": "Modalità demo — stai guardando {instance}, un'azienda di esempio.",
+    "previewAsClientBanner": "Stai vedendo {instance} come lo vedrebbe il tuo cliente finale: menu ridotto, meno densità e l'agente senza gergo tecnico.",
+    "previewAsClientHint": "Prova a vederlo come lo vede il tuo cliente, dal menu di sinistra."
   },
   "Onboarding": {
     "step1Label": "Connessione Odoo",
@@ -1840,6 +1850,8 @@
       "accountMove": "Fatture",
       "crmLead": "Opportunità",
       "purchaseOrder": "Acquisti"
-    }
+    },
+    "titleDemo": "Quello che so già di {instance}",
+    "hintDemo": "È un'azienda di esempio. Chiedimi di uno qualsiasi di questi numeri."
   }
 }

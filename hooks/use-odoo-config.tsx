@@ -37,8 +37,23 @@ function enrichConfigs(
 
 export function OdooConfigProvider({ children }: { children: React.ReactNode }) {
   const { meData } = useSession();
-  const rawConfigs = meData?.odoo_configs ?? [];
+  const ownConfigs = meData?.odoo_configs ?? [];
+  /**
+   * Las instancias del parque (PLAN_INSTANCIAS/05). Entran a la lista **sólo cuando
+   * no hay propias usables**: para un implementador con clientes de verdad
+   * conectados, mezclarle "Casa Mendieta" entre sus cuentas es ruido, y encima
+   * ruido peligroso — la pregunta más cara de contestar mal del producto es sobre
+   * qué base estoy trabajando.
+   *
+   * Cuando no hay propias, en cambio, son TODA la lista, y es justamente lo que D7
+   * quiere mostrar: el visitante no elige "una empresa de un desplegable", entra a
+   * una cuenta que ya tiene varios clientes conectados y los cambia como los va a
+   * cambiar de verdad.
+   */
+  const demoConfigs = meData?.demo_instances ?? [];
   const isClientUser = meData?.user?.role === "CLIENT_USER";
+  const hasOwnUsable = ownConfigs.some((c) => c.connection_status === "active");
+  const rawConfigs = hasOwnUsable ? ownConfigs : [...ownConfigs, ...demoConfigs];
 
   const [credentials, setCredentials] = useState<OdooCredentialSummary[]>([]);
   const [activeConfigId, setActiveConfigIdState] = useState<string | null>(null);
@@ -62,7 +77,12 @@ export function OdooConfigProvider({ children }: { children: React.ReactNode }) 
   useEffect(() => {
     if (usableConfigs.length === 0) {
       if (!isClientUser || rawConfigs.length === 0) {
-        setActiveConfigIdState("demo");
+        // ⚠️ El literal `"demo"` queda SÓLO como último recurso: es el alias de
+        // compatibilidad que el backend resuelve a la instancia pública de menor
+        // `demo_order`. Mientras haya catálogo preferimos su UUID, porque es lo que
+        // hace que el chat quede estampado contra una instancia concreta y que el
+        // historial lateral se pueda filtrar por cliente.
+        setActiveConfigIdState(demoConfigs[0]?.id ?? "demo");
       } else {
         setActiveConfigIdState(rawConfigs[0].id);
       }
@@ -89,7 +109,15 @@ export function OdooConfigProvider({ children }: { children: React.ReactNode }) 
 
   const configs = enrichConfigs(rawConfigs, credentials);
   const activeConfig = configs.find((c) => c.id === activeConfigId) ?? null;
-  const isDemoMode = activeConfigId === "demo";
+  /**
+   * ⚠️ **Por dato, no por literal.** Con el parque hay cuatro instancias de demo y
+   * `activeConfigId === "demo"` sólo reconocería una de ellas — las otras tres se
+   * comportarían como la instancia de un cliente real (sin cartel de demo, con el
+   * botón de guardar Rutina, ofreciendo refrescar un pin contra una base que se
+   * restaura sola). El literal se sigue aceptando porque es el alias que el backend
+   * resuelve cuando todavía no hay catálogo cargado.
+   */
+  const isDemoMode = activeConfig?.is_demo === true || activeConfigId === "demo";
   const isConfigured = isDemoMode || activeConfig !== null;
 
   const config = activeConfig

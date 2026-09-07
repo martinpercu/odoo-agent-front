@@ -27,7 +27,10 @@
     "no": "Nein",
     "instanceBadge": "Instanz",
     "otherInstances": "{count, plural, one {# Chat in einer anderen Instanz} other {# Chats in anderen Instanzen}}",
-    "onlyActiveInstance": "Nur die aktive Instanz anzeigen"
+    "onlyActiveInstance": "Nur die aktive Instanz anzeigen",
+    "viewAsClient": "Kundenansicht",
+    "backToMyView": "Zurück zu meiner Ansicht",
+    "viewAsClientInfo": "Kunden sehen eine luftigere Ansicht, und der Agent sagt „Kunde“ statt „res.partner“."
   },
   "UserMenu": {
     "guest": "Gast",
@@ -96,7 +99,10 @@
     "micPaused": "Aufnahme pausiert",
     "micDenied": "Mikrofonzugriff verweigert",
     "transcribing": "Wird transkribiert...",
-    "transcribeError": "Audio konnte nicht transkribiert werden"
+    "transcribeError": "Audio konnte nicht transkribiert werden",
+    "selectConfig": "Instanz auswählen",
+    "ownGroup": "Deine Instanzen",
+    "demoGroup": "Beispielunternehmen"
   },
   "ChatMessages": {
     "typingIndicator": "Frage Odoo ab",
@@ -160,7 +166,8 @@
       "title": "Anmeldedaten nicht konfiguriert",
       "desc": "Sie haben keine Anmeldedaten für diese Odoo-Verbindung konfiguriert. Richten Sie diese in den Einstellungen ein.",
       "cta": "Zu den Einstellungen"
-    }
+    },
+    "connectionError": "Die Abfrage konnte nicht abgeschlossen werden. Prüfe die Verbindung und versuche es erneut."
   },
   "ChatHistory": {
     "loading": "Konversation wird geladen..."
@@ -597,7 +604,10 @@
     "accessCodePlaceholder": "Ihr Einladungscode",
     "accessCodeError": "Die Registrierung ist nur für Founding Partners. Für Zugang wenden Sie sich an <mail>martin@theodooagent.com</mail>",
     "requestAccess": "Noch keinen Code? <mail>Zugang anfragen</mail>",
-    "requestAccessEmail": "martin@theodooagent.com"
+    "requestAccessEmail": "martin@theodooagent.com",
+    "demoBannerNamed": "Demo-Modus — du siehst {instance}, ein Beispielunternehmen.",
+    "previewAsClientBanner": "Du siehst {instance} so, wie es dein Endkunde sähe: gekürztes Menü, luftigere Darstellung und der Agent ohne Fachjargon.",
+    "previewAsClientHint": "Sieh es dir aus Kundensicht an — über das linke Menü."
   },
   "Onboarding": {
     "step1Label": "Odoo-Verbindung",
@@ -1840,6 +1850,8 @@
       "accountMove": "Rechnungen",
       "crmLead": "Chancen",
       "purchaseOrder": "Einkäufe"
-    }
+    },
+    "titleDemo": "Was ich über {instance} bereits weiß",
+    "hintDemo": "Das ist ein Beispielunternehmen. Frag mich nach diesen Zahlen."
   }
 }

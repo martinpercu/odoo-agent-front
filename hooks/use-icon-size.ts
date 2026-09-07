@@ -1,6 +1,6 @@
 "use client";
 
-import { useSession } from "@/hooks/use-session";
+import { useAudience } from "@/hooks/use-audience";
 
 type IconSlot = "inline" | "button" | "heading";
 
@@ -10,8 +10,6 @@ const SIZES: Record<"builder" | "client", Record<IconSlot, number>> = {
 };
 
 export function useIconSize(slot: IconSlot = "inline"): number {
-  const { meData } = useSession();
-  const role = meData?.user?.role;
-  const audience = role === "ADMIN" || role === "SUPERADMIN" ? "builder" : "client";
+  const { audience } = useAudience();   // ver `hooks/use-audience.tsx`
   return SIZES[audience][slot];
 }

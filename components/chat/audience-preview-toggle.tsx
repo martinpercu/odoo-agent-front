@@ -1,0 +1,147 @@
+"use client";
+
+import { Eye, Info, Undo2 } from "lucide-react";
+import { useTranslations } from "next-intl";
+
+import { useAudience } from "@/hooks/use-audience";
+import { useIconSize } from "@/hooks/use-icon-size";
+import { InfoTooltip } from "@/components/ui/info-tooltip";
+
+/**
+ * **Verse a sí mismo desde el cliente**, en el panel izquierdo, debajo del cambiador de
+ * instancias (`PLAN_INSTANCIAS/07-demo-vivencial.md` Idea 3).
+ *
+ * ⭐ Contesta sola la objeción que frena a un implementador —*"¿y esto no le muestra de
+ * más a mi cliente?"*— que hasta ahora era imposible de mostrar porque hacía falta tener
+ * dos cuentas abiertas al mismo tiempo. Un click y la misma pantalla se dibuja con la
+ * densidad, el copy, los íconos y el menú recortado de un `CLIENT_USER`, y el agente
+ * contesta con voz de concierge.
+ *
+ * ⚠️ **El gate es el ROL, no la audiencia** (`canPreviewAsClient` sale de `baseAudience`,
+ * que no se mueve con la vista previa). Este control vive en el sidebar, que es una de las
+ * superficies que la vista previa RECORTA: gatearlo por audiencia lo haría desaparecer en
+ * el mismo click que lo enciende, y no hay un segundo control en ningún lado para volver.
+ * Es la única pieza de todo esto que tiene que ser inmune a su propio efecto.
+ *
+ * ⚠️ Un `CLIENT_USER` no lo ve nunca — ya ESTÁ en esa vista.
+ *
+ * Sobre la posición: con **una sola instancia** el cambiador de instancias no se dibuja
+ * (no hay nada que ciclar) y este control ocupa su lugar; con **dos o más** queda debajo.
+ * Y al pasar a vista cliente el cartel de instancia se esconde —un cliente no lo ve— así
+ * que este control sube: es deliberado, la pantalla tiene que quedar como la vería el
+ * cliente.
+ */
+export function AudiencePreviewToggle({ collapsed = false }: { collapsed?: boolean }) {
+  const t = useTranslations("Sidebar");
+  const iconBtn = useIconSize("button");
+  const { canPreviewAsClient, isPreviewingAsClient, setPreviewAsClient } = useAudience();
+
+  if (!canPreviewAsClient) return null;
+
+  // ⚠️ `stopPropagation` en el click: el sidebar COLAPSADO expande al clickearlo (hay un
+  // `onClick` en su contenedor), así que sin esto encender la vista previa desde colapsado
+  // abriría además el panel — dos efectos por un click. Misma convención que "Nueva
+  // Consulta" y el botón de colapsar.
+
+  const label = isPreviewingAsClient ? t("backToMyView") : t("viewAsClient");
+  const Icon = isPreviewingAsClient ? Undo2 : Eye;
+
+  // Colapsado queda sólo el ícono, igual que el cartel de instancia; el texto viaja en el
+  // `title` para que siga siendo recuperable sin expandir.
+  if (collapsed) {
+    return (
+      <div className="border-b border-sidebar-border px-3 pb-3 pt-2">
+        <button
+          type="button"
+          role="switch"
+          aria-checked={isPreviewingAsClient}
+          aria-label={label}
+          title={label}
+          onClick={(e) => { e.stopPropagation(); setPreviewAsClient(!isPreviewingAsClient); }}
+          className={`group flex h-btn-md w-full items-center justify-center rounded-btn transition-colors ${
+            isPreviewingAsClient ? "bg-accent-subtle" : "bg-sidebar-hover"
+          }`}
+        >
+          {/* ⚠️ Colapsado, lo ÚNICO que responde al hover es el ícono, que se pone azul
+              — mismo gesto que el ciclador de instancias justo arriba. El fondo ya no
+              cambia: dos superficies vecinas que reaccionan distinto al mismo hover se
+              leen como dos controles de distinta naturaleza, y son el mismo tipo de cosa. */}
+          <Icon
+            size={iconBtn}
+            strokeWidth={1.5}
+            className={`transition-colors ${
+              isPreviewingAsClient
+                ? "text-accent group-hover:text-accent-hover"
+                : "text-foreground group-hover:text-accent"
+            }`}
+            aria-hidden
+          />
+        </button>
+      </div>
+    );
+  }
+
+  // ⚠️ **La fila NO es un botón** (2026-09-04): lo clickeable es SÓLO el riel de la
+  // derecha. El texto lleva al lado un ícono de info con su tooltip, y una fila entera
+  // clickeable se traga ese hover — abrir la explicación terminaba cambiando la vista.
+  // Por eso el estado va en el riel (`role="switch"`) y el contenedor queda decorativo.
+  return (
+    <div className="border-b border-sidebar-border px-3 pb-3 pt-2">
+      <div
+        className={`flex w-full items-center gap-2 rounded-btn px-3 py-2 text-left ${
+          isPreviewingAsClient
+            ? "bg-accent-subtle text-accent"
+            : "bg-sidebar-hover text-foreground"
+        }`}
+      >
+        <Icon size={iconBtn} strokeWidth={1.5} className="shrink-0" aria-hidden />
+        <span className="min-w-0 truncate text-body font-medium">{label}</span>
+        {/* El "+ info" existe SÓLO del lado del implementador: del lado del cliente el
+            texto ya es "volver a mi vista" y explicar en qué consiste la vista que estás
+            mirando no agrega nada.
+            ⚠️ El centrado vertical se resuelve en el disparador, no en la fila: es un
+            `<button>` inline, así que su caja hereda el line-height del texto y el ícono
+            queda apoyado en la línea base, un pelo más abajo que "Ver como cliente".
+            `leading-none` + `align-middle` colapsan ese espacio de línea contra el SVG
+            (que ya es `block`), sin tocar el flex del contenedor. */}
+        {!isPreviewingAsClient && (
+          <InfoTooltip
+            text={t("viewAsClientInfo")}
+            className="shrink-0 align-middle leading-none no-underline"
+          >
+            <Info
+              size={14}
+              strokeWidth={1.5}
+              className="block text-text-muted transition-colors hover:text-foreground"
+              aria-label={t("viewAsClientInfo")}
+            />
+          </InfoTooltip>
+        )}
+        <button
+          type="button"
+          role="switch"
+          aria-checked={isPreviewingAsClient}
+          aria-label={label}
+          title={label}
+          onClick={(e) => { e.stopPropagation(); setPreviewAsClient(!isPreviewingAsClient); }}
+          className="ml-auto shrink-0 rounded-full p-0.5 transition-opacity hover:opacity-80"
+        >
+          {/* El riel. Es el ÚNICO control: el estado lo comunica `role="switch"` +
+              `aria-checked`, y el texto de al lado ya cambia solo. */}
+          <span
+            aria-hidden
+            className={`relative block h-4 w-8 rounded-full transition-colors ${
+              isPreviewingAsClient ? "bg-accent" : "bg-border"
+            }`}
+          >
+            <span
+              className={`absolute top-0.5 h-3 w-3 rounded-full bg-surface transition-all ${
+                isPreviewingAsClient ? "left-[18px]" : "left-0.5"
+              }`}
+            />
+          </span>
+        </button>
+      </div>
+    </div>
+  );
+}
